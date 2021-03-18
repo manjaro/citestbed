@@ -1,0 +1,52 @@
+name: iso_build
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '30 6 1 * *'
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04  
+    strategy:
+      matrix:
+        ##### EDIT ME #####      
+        EDITION: [xfce]
+        BRANCH: [stable]
+        SCOPE: [minimal,full]
+        ###################
+    steps:
+       - name: Add SSH key
+         env:
+            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+         run: |
+              mkdir -p ~/.ssh
+              ssh-keyscan frs.sourceforge.net >> ~/.ssh/known_hosts
+              echo "${{ secrets.SF_PRIV_SSHKEY }}" > ~/.ssh/github_actions
+              chmod 600 ~/.ssh/github_actions
+              ssh-agent -a $SSH_AUTH_SOCK > /dev/null   
+              ssh-add ~/.ssh/github_actions    
+      -
+        name: build
+        env:
+          EDITION: ${{ matrix.EDITION }}
+          BRANCH: ${{ matrix.BRANCH }}
+          SCOPE: ${{ matrix.SCOPE }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |                
+          [ "$SCOPE" == "minimal" ] && unset SCOPE
+
+          ##### EDIT ME #####
+          
+          KERNEL=linux510
+          CODE_NAME="Ornara"
+          VERSION=.21.0
+          PROJECT=manjarotest
+          SSH_COMMAND="ssh -p 22 -i ~/.ssh/github_actions -o StrictHostKeyChecking=no"
+          
+          ###################
+          
+          mkdir -p $VERSION
+          echo "file1" > $VERSION/file1
+          echo "file2" > $VERSION/file2
+          
+          rsync -vaP --stats -e $SSH_COMMAND $VERSION/* ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/$VERSION
