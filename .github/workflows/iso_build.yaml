@@ -9,12 +9,148 @@ jobs:
     runs-on: ubuntu-20.04  
     strategy:
       matrix:
-        ##### EDIT ME #####      
+        ##### EDIT ME #####  
         EDITION: [xfce]
         BRANCH: [stable]
         SCOPE: [minimal]
         ###################
     steps:
+      -
+        name: Install build-dependencies
+        run: |
+          sudo apt-get update
+          sudo apt install gdisk zip systemd-container bmap-tools asciidoc libarchive-tools git build-essential cmake libarchive-dev pkg-config libcurl4-openssl-dev libgpgme-dev libssl-dev fakeroot dh-autoreconf haveged os-prober kwalify dosfstools libisoburn1 squashfs-tools docbook2x
+
+      -
+        name: Install pacman
+        run: |          
+          sudo git clone https://gitlab.manjaro.org/packages/core/pacman.git
+          cd pacman
+          sudo wget https://sources.archlinux.org/other/pacman/pacman-5.2.2.tar.gz
+          sudo tar -xvf pacman-5.2.2.tar.gz
+          cd pacman-5.2.2
+          sudo patch -p1 -i ../pacman-sync-first-option.patch
+          sudo ./configure --prefix=/usr --sysconfdir=/etc \
+            --localstatedir=/var --enable-doc \
+            --with-scriptlet-shell=/usr/bin/bash \
+            --with-ldconfig=/usr/bin/ldconfig
+          sudo make V=1
+          sudo make install
+          cd ..
+          sudo install -m644 pacman.conf.x86_64 /etc/pacman.conf
+          sudo install -m644 makepkg.conf /etc/
+          sudo sed -i /etc/makepkg.conf \
+            -e "s|@CARCH[@]|x86_64|g" \
+            -e "s|@CHOST[@]|x86_64-pc-linux-gnu|g" \
+            -e "s|@CARCHFLAGS[@]|-march=x86-64|g"
+          sudo install -m644 etc-pacman.d-gnupg.mount /usr/lib/systemd/system/etc-pacman.d-gnupg.mount
+          sudo install -m644 pacman-init.service /usr/lib/systemd/system/pacman-init.service
+          sudo mkdir -p /etc/pacman.d
+          sudo touch /etc/pacman.d/mirrorlist
+          cd ..
+      -
+        name: Install keyrings
+        run: |          
+          sudo git clone https://gitlab.manjaro.org/packages/core/manjaro-keyring.git
+          cd manjaro-keyring
+          sudo install -dm755 /usr/share/pacman/keyrings/
+          sudo install -m0644 manjaro.gpg /usr/share/pacman/keyrings/
+          sudo install -m0644 manjaro-trusted /usr/share/pacman/keyrings/
+          sudo install -m0644 manjaro-trusted /usr/share/pacman/keyrings/
+          cd ..
+          
+          sudo git clone https://projects.archlinux.org/archlinux-keyring.git
+          cd archlinux-keyring
+          sudo install -m0644 archlinux.gpg /usr/share/pacman/keyrings/
+          sudo install -m0644 archlinux-trusted /usr/share/pacman/keyrings/
+          sudo install -m0644 archlinux-revoked /usr/share/pacman/keyrings/
+          cd ..          
+                    
+          sudo pacman-key --init
+          sudo pacman-key --populate archlinux manjaro
+      -
+        name: Install arch-install-scripts
+        run: |          
+          pkgver=23
+          sudo wget https://git.archlinux.org/arch-install-scripts.git/snapshot/arch-install-scripts-$pkgver.tar.gz
+          sudo tar -xvf arch-install-scripts-$pkgver.tar.gz
+          sudo make -C arch-install-scripts-$pkgver
+          sudo make -C arch-install-scripts-$pkgver check
+          sudo make -C arch-install-scripts-$pkgver PREFIX=/usr install
+          
+          sudo wget https://gitlab.manjaro.org/applications/pacman-mirrors/-/raw/v4.19x-stable/conf/pacman-mirrors.conf -O /etc/pacman-mirrors.conf
+      -
+        name: Install calamares-tools
+        run: |          
+          sudo git clone https://gitlab.manjaro.org/applications/calamares-tools.git
+          
+          install_cal_tools() {
+              cd calamares-tools
+              sudo install -d /usr/share/calamares/
+              sudo cp -rv schemas/ /usr/share/calamares/
+              cd ..
+          }
+          
+          install_cal_tools
+      -
+        name: Install mkinitcpio
+        run: |          
+          sudo wget https://git.archlinux.org/mkinitcpio.git/snapshot/mkinitcpio-29.tar.gz
+          sudo tar -xf mkinitcpio-29.tar.gz
+          sudo make -C mkinitcpio-29 install
+          sudo sed -i -e 's|File|Path|' /usr/share/libalpm/hooks/*hook
+      -
+        name: Install manjaro-tools
+        run: |
+          sudo git clone https://gitlab.manjaro.org/tools/development-tools/manjaro-tools.git
+
+          install_mjr_tools() {
+              cd manjaro-tools
+              sudo make SYSCONFDIR=/etc PREFIX=/usr
+              sudo make SYSCONFDIR=/etc PREFIX=/usr install_base
+              sudo make SYSCONFDIR=/etc PREFIX=/usr install_yaml
+              sudo make SYSCONFDIR=/etc PREFIX=/usr install_iso
+          }
+          
+          install_mjr_tools
+      -
+        name: Checkout iso-profiles
+        run: |          
+          sudo git clone https://gitlab.manjaro.org/profiles-and-settings/iso-profiles.git
+      -
+        name: build
+        env:
+          EDITION: ${{ matrix.EDITION }}
+          BRANCH: ${{ matrix.BRANCH }}
+          SCOPE: ${{ matrix.SCOPE }}
+          ##### EDIT ME ##### 
+          KERNEL: linux510
+          CODE_NAME: "Ornara"
+          VERSION: 21.0
+          ###################
+        run: |                
+          [ "$SCOPE" == "minimal" ] && unset SCOPE
+          
+          sudo sed -i -e 's|dist_name=$(get_distname)|dist_name=Manjaro|g' /usr/lib/manjaro-tools/util.sh
+          sudo sed -i -e 's|iso_name=$(get_osid)|iso_name=manjaro|g' /usr/lib/manjaro-tools/util.sh
+          sudo sed -i -e "s|build_mirror='https://manjaro.moson.eu'|build_mirror='https://mirror.easyname.at/manjaro'|g" /usr/lib/manjaro-tools/util.sh
+          sudo sed -i -e "s|dist_release=\$(get_release)|dist_release=$VERSION|g" /usr/lib/manjaro-tools/util.sh
+          sudo sed -i -e "s|dist_codename=\$(get_codename)|dist_codename=\"$CODE_NAME\"|g" /usr/lib/manjaro-tools/util.sh
+             
+          sudo buildiso ${SCOPE:+-f} -p $EDITION -b $BRANCH -k $KERNEL
+          
+          FILE_PATH=$(find /var/cache/manjaro-tools/iso -type f -name "*.iso" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
+          mv -v $FILE_PATH $(basename $FILE_PATH)
+          sha256sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha256
+
+          echo "FILE_PATH=$(basename $FILE_PATH)" >> $GITHUB_ENV
+          echo "FILE_SHA256=$(basename $FILE_PATH).sha256" >> $GITHUB_ENV
+          
+          FILE_PKG=$(find /var/cache/manjaro-tools/iso -type f -name "*-pkgs.txt" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
+          mv -v $FILE_PKG .
+
+          echo "FILE_PKG=$(basename $FILE_PKG)" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - 
         name: Add SSH key
         env:
@@ -27,27 +163,8 @@ jobs:
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add /home/runner/.ssh/github_actions
       - 
-        name: build
+        name: Upload to SF
         env:
-          EDITION: ${{ matrix.EDITION }}
-          BRANCH: ${{ matrix.BRANCH }}
-          SCOPE: ${{ matrix.SCOPE }}
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |                
-          [ "$SCOPE" == "minimal" ] && unset SCOPE
-
-          ##### EDIT ME #####
-          
-          KERNEL=linux510
-          CODE_NAME="Ornara"
-          VERSION=21.0
-          PROJECT=manjarotest
-          
-          ###################
-          
-          mkdir -p $VERSION
-          echo "file1" > $VERSION/file1
-          echo "file2" > $VERSION/file2
-          ls $VERSION
-          
-          rsync -vaP --stats -e ssh "$VERSION" ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT
+        run: |
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ env.VERSION }}
