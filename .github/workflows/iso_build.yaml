@@ -42,7 +42,7 @@ jobs:
           CODE_NAME="Ornara"
           VERSION=.21.0
           PROJECT=manjarotest
-          SSH_COMMAND="ssh -p 22 -i /home/runner/.ssh/github_actions -o StrictHostKeyChecking=no"
+          SSH_COMMAND="ssh -i /home/runner/.ssh/github_actions"
           
           ###################
           
