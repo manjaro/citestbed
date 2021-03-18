@@ -150,7 +150,6 @@ jobs:
           mv -v $FILE_PKG .
 
           echo "FILE_PKG=$(basename $FILE_PKG)" >> $GITHUB_ENV
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - 
         name: Add SSH key
         env:
@@ -163,11 +162,18 @@ jobs:
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add /home/runner/.ssh/github_actions
       - 
+        name: Get time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          format: 'YYYYMMDDHHmm'          
+      - 
         name: Upload to SF
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          VERSION: ${{ steps.time.outputs.time }}
           ##### EDIT ME #####
           PROJECT: "manjarotest"
-          ###################          
+          ###################       
         run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ env.VERSION }}
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/$VERSION
