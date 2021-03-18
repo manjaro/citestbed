@@ -126,7 +126,7 @@ jobs:
           ##### EDIT ME #####
           KERNEL: "linux510"
           CODE_NAME: "Ornara"
-          VERSION: "21.0-rc1"
+          VERSION: "21.0"
           ###################
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
@@ -170,4 +170,5 @@ jobs:
           PROJECT: "manjarotest"
           ###################       
         run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ env.VERSION }}
+          DATE=$(date +%y%m%d)
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ env.VERSION }}-$DATE
