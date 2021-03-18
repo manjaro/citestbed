@@ -19,14 +19,13 @@ jobs:
          env:
             SSH_AUTH_SOCK: /tmp/ssh_agent.sock
          run: |
-              mkdir -p ~/.ssh
-              ssh-keyscan frs.sourceforge.net >> ~/.ssh/known_hosts
-              echo "${{ secrets.SF_PRIV_SSHKEY }}" > ~/.ssh/github_actions
-              chmod 600 ~/.ssh/github_actions
-              ssh-agent -a $SSH_AUTH_SOCK > /dev/null   
-              ssh-add ~/.ssh/github_actions    
-      -
-        name: build
+          mkdir -p ~/.ssh
+          ssh-keyscan frs.sourceforge.net >> ~/.ssh/known_hosts
+          echo "${{ secrets.SF_PRIV_SSHKEY }}" > ~/.ssh/github_actions
+          chmod 600 ~/.ssh/github_actions
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null   
+          ssh-add ~/.ssh/github_actions    
+      - name: build
         env:
           EDITION: ${{ matrix.EDITION }}
           BRANCH: ${{ matrix.BRANCH }}
