@@ -155,9 +155,6 @@ jobs:
         name: Add SSH key
         env:
            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-           ##### EDIT ME #####
-           PROJECT: "manjarotest"
-           ###################
         run: |
           mkdir -p /home/runner/.ssh
           ssh-keyscan frs.sourceforge.net >> /home/runner/.ssh/known_hosts
@@ -168,6 +165,9 @@ jobs:
       - 
         name: Upload to SF
         env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+           ##### EDIT ME #####
+           PROJECT: "manjarotest"
+           ###################          
         run: |
           rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ env.VERSION }}
