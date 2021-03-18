@@ -15,11 +15,11 @@ jobs:
         SCOPE: [minimal,full]
         ###################
     steps:
-       - 
-         name: Add SSH key
-         env:
-            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-         run: |
+      - 
+        name: Add SSH key
+        env:
+           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
           mkdir -p ~/.ssh
           ssh-keyscan frs.sourceforge.net >> ~/.ssh/known_hosts
           echo "${{ secrets.SF_PRIV_SSHKEY }}" > ~/.ssh/github_actions
