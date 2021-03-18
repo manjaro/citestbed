@@ -118,7 +118,7 @@ jobs:
         run: |          
           sudo git clone https://gitlab.manjaro.org/profiles-and-settings/iso-profiles.git
       -
-        name: build
+        name: Build ISO
         env:
           EDITION: ${{ matrix.EDITION }}
           BRANCH: ${{ matrix.BRANCH }}
