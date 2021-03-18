@@ -10,9 +10,9 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####  
-        EDITION: [xfce]
+        EDITION: [xfce,gnome,kde]
         BRANCH: [stable]
-        SCOPE: [minimal]
+        SCOPE: [minimal,full]
         ###################
     steps:
       -
@@ -126,7 +126,7 @@ jobs:
           ##### EDIT ME #####
           KERNEL: "linux510"
           CODE_NAME: "Ornara"
-          VERSION: "21.0"
+          VERSION: "21.0-rc1"
           ###################
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
@@ -150,6 +150,7 @@ jobs:
           mv -v $FILE_PKG .
 
           echo "FILE_PKG=$(basename $FILE_PKG)" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
       - 
         name: Add SSH key
         env:
@@ -160,20 +161,13 @@ jobs:
           echo "${{ secrets.SF_PRIV_SSHKEY }}" > /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add /home/runner/.ssh/github_actions
-      - 
-        name: Get time
-        id: time
-        uses: nanzm/get-time-action@v1.1
-        with:
-          format: 'YYYYMMDDHHmm'          
+          ssh-add /home/runner/.ssh/github_actions       
       - 
         name: Upload to SF
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          VERSION: ${{ steps.time.outputs.time }}
           ##### EDIT ME #####
           PROJECT: "manjarotest"
           ###################       
         run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/$VERSION
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ env.VERSION }}
