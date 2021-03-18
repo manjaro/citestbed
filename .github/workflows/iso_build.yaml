@@ -123,10 +123,10 @@ jobs:
           EDITION: ${{ matrix.EDITION }}
           BRANCH: ${{ matrix.BRANCH }}
           SCOPE: ${{ matrix.SCOPE }}
-          ##### EDIT ME ##### 
-          KERNEL: linux510
+          ##### EDIT ME #####
+          KERNEL: "linux510"
           CODE_NAME: "Ornara"
-          VERSION: 21.0
+          VERSION: "21.0"
           ###################
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
@@ -155,6 +155,9 @@ jobs:
         name: Add SSH key
         env:
            SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+           ##### EDIT ME #####
+           PROJECT: "manjarotest"
+           ###################
         run: |
           mkdir -p /home/runner/.ssh
           ssh-keyscan frs.sourceforge.net >> /home/runner/.ssh/known_hosts
