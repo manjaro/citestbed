@@ -163,7 +163,17 @@ jobs:
           echo "${{ secrets.OSDN_PRIV_SSHKEY }}" >> /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add /home/runner/.ssh/github_actions       
+          ssh-add /home/runner/.ssh/github_actions
+      - 
+        name: Upload to SF
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ##### EDIT ME #####
+          PROJECT: "manjarolinux"
+          VERSION: "21.0-rc1"
+          ###################       
+        run: |
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION               
       - 
         name: Upload to OSDN
         env:
@@ -174,13 +184,3 @@ jobs:
           ###################       
         run: |
           rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/$VERSION
-      - 
-        name: Upload to SF
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          ##### EDIT ME #####
-          PROJECT: "manjarolinux"
-          VERSION: "21.0-rc1"
-          ###################       
-        run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION
