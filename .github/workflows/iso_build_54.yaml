@@ -174,13 +174,13 @@ jobs:
           ###################       
         run: |
           rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION               
-      - 
-        name: Upload to OSDN
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          ##### EDIT ME #####
-          PROJECT: "manjaro"
-          VERSION: "21.0-rc1"
-          ###################       
-        run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/$VERSION
+#      - 
+#        name: Upload to OSDN
+#        env:
+#          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+#          ##### EDIT ME #####
+#          PROJECT: "manjaro"
+#          VERSION: "21.0-rc1"
+#          ###################       
+#        run: |
+#          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/$VERSION
