@@ -43,6 +43,7 @@ jobs:
         run: |
           mkdir -p /home/runner/.ssh
           ssh-keyscan frs.sourceforge.net >> /home/runner/.ssh/known_hosts
+          ssh-keyscan storage.osdn.net >> /home/runner/.ssh/known_hosts
           echo "${{ secrets.SF_PRIV_SSHKEY }}" > /home/runner/.ssh/github_actions
           echo "${{ secrets.OSDN_PRIV_SSHKEY }}" >> /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
