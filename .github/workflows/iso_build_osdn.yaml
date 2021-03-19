@@ -12,7 +12,7 @@ jobs:
         ##### EDIT ME #####  
         EDITION: [xfce]
         BRANCH: [stable]
-        SCOPE: [minimal]
+        SCOPE: [minimal,full]
         ###################
     steps:
       -
