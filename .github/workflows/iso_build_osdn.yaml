@@ -35,7 +35,8 @@ jobs:
 
           echo "FILE_PATH=file1" >> $GITHUB_ENV
           echo "FILE_SHA256=file2" >> $GITHUB_ENV
-          echo "VERSION=file3" >> $GITHUB_ENV
+          echo "FILE_PKG=file3" >> $GITHUB_ENV
+          echo "VERSION=test_upload" >> $GITHUB_ENV
       - 
         name: Add SSH key
         env:
@@ -58,4 +59,4 @@ jobs:
           ###################       
         run: |
           DATE=$(date +%y%m%d)
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ env.VERSION }}-$DATE
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}-$DATE
