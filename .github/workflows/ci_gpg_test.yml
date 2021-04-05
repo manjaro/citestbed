@@ -43,7 +43,7 @@ jobs:
           GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
           SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
           PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
-          GPG="gpg --homedir=$GPG_HOMEDIR"
+          GPG="gpg --homedir=$GPG_HOMEDIR --no-tty --batch --yes"
           
           ls $GPG_HOMEDIR
           
@@ -61,13 +61,13 @@ jobs:
           
           set +x
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
-          | $GPG --import --no-tty --batch --yes
+          | $GPG --import
           set -x
           
           echo "some cmd"
           
           set +x
-          $GPG --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" file1
+          $GPG --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase="${{ secrets.CI_GPG_PASSPHRASE }}" file1
           set -x
           
           echo "cleaning up"
