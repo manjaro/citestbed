@@ -38,6 +38,6 @@ jobs:
           echo "FILE_PKG=file3" >> $GITHUB_ENV
           echo "VERSION=test_upload" >> $GITHUB_ENV
           
-          apt install paperkey gpg
+          sudo apt install paperkey gpg
           
           gpg -d --batch --passphrase $CI_SAMPLE_VALUE file1.gpg
