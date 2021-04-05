@@ -53,11 +53,16 @@ jobs:
           echo "unpack secret key"
           echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"
           
+          echo "Secrets unpacked..."
+          set -x 
+          
+          md5sum "$PUBLIC_KEY_FILE" "$SECRET_KEY_FILE"
+          
+          set +x
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
           | $GPG --import --passphrase "${{ secrets.CI_GPG_PASSPHRASE }}"
 
-          echo "Secrets unpacked..."
-          set -x  
+          set -x
           
           echo "some cmd"
           $GPG --detach-sign --use-agent -u "${CI_GPG_KEY}" file1
