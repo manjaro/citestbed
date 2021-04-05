@@ -40,13 +40,18 @@ jobs:
           
           sudo apt-get install paperkey gpg
           
+          echo "setup values"
           GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
           SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
           PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
-
+          
+          echo "setup homedir"
           gpg --homedir="$GPG_HOMEDIR"
           
+          echo "some cmd"
           gpg -d --batch --passphrase $CI_SAMPLE_VALUE file1.gpg
           
+          echo "cleaning up"
           shred "$GPG_HOMEDIR"
           rm -rf "$GPG_HOMEDIR"
+          echo "script done"
