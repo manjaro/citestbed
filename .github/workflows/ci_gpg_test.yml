@@ -45,7 +45,7 @@ jobs:
           PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
           GPG="gpg --homedir=$GPG_HOMEDIR"
           
-          $GPG -k
+          $GPG_HOMEDIR
           
           # unpack public key
           echo "$CI_PUB_KEY" | base64 --decode > "$PUBLIC_KEY_FILE"
