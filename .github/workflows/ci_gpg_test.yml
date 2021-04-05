@@ -44,7 +44,7 @@ jobs:
           SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
           PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
 
-          gpg --homedir=$GPG_HOMEDIR"
+          gpg --homedir="$GPG_HOMEDIR"
           
           gpg -d --batch --passphrase $CI_SAMPLE_VALUE file1.gpg
           
