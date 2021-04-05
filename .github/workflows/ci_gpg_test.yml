@@ -61,7 +61,7 @@ jobs:
           
           set +x
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
-          | $GPG --import"
+          | $GPG --import
           set -x
           
           echo "some cmd"
