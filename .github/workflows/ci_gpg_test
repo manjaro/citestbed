@@ -1,0 +1,43 @@
+name: ci_gpg_test
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron:  '30 6 1 * *'
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04  
+    strategy:
+      matrix:
+        ##### EDIT ME #####  
+        EDITION: [xfce]
+        BRANCH: [stable]
+        SCOPE: [minimal]
+        ###################
+    steps:
+      -
+        name: Build ISO
+        env:
+          EDITION: ${{ matrix.EDITION }}
+          BRANCH: ${{ matrix.BRANCH }}
+          SCOPE: ${{ matrix.SCOPE }}
+          ##### EDIT ME #####
+          KERNEL: "linux510"
+          CODE_NAME: "Ornara"
+          VERSION: "test_upload"
+          ###################
+        run: |                
+          [ "$SCOPE" == "minimal" ] && unset SCOPE
+          
+          echo "file1" > file1.gpg
+          echo "file2" > file2
+          echo "file3" > file3
+
+          echo "FILE_PATH=file1" >> $GITHUB_ENV
+          echo "FILE_SHA256=file2" >> $GITHUB_ENV
+          echo "FILE_PKG=file3" >> $GITHUB_ENV
+          echo "VERSION=test_upload" >> $GITHUB_ENV
+          
+          apt install paperkey gpg
+          
+          gpg -d --batch --passphrase $CI_SAMPLE_VALUE file1.gpg
