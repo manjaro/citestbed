@@ -30,7 +30,6 @@ jobs:
           echo "file2" > file2
           echo "file3" > file3
           
-          set -x
           echo ${{ secrets.CI_SAMPLE_VALUE }}
                  
           sudo apt-get install paperkey
