@@ -63,6 +63,9 @@ jobs:
           $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" file1
           set -x
           
+          echo "Verifying file"
+          gpg --verify file1.sig
+          
           ls -lasih
           
           echo "cleaning up"
