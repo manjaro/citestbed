@@ -70,7 +70,9 @@ jobs:
           $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase="${{ secrets.CI_GPG_PASSPHRASE }}" file1
           set -x
           
+          ls -lasih
+          
           echo "cleaning up"
-          shred "$GPG_HOMEDIR"
+          find "$GPG_HOMEDIR" -type f -exec shred {} \;
           rm -rvf "$GPG_HOMEDIR"
           echo "script done"
