@@ -64,7 +64,7 @@ jobs:
           set -x
           
           echo "Verifying file"
-          gpg --verify file1.sig
+          $GPG --verify file1.sig
           
           ls -lasih
           
