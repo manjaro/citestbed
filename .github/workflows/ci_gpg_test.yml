@@ -29,27 +29,38 @@ jobs:
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
           
-          echo "file1" > file1.gpg
+          echo "file1" > file1
           echo "file2" > file2
           echo "file3" > file3
 
-          echo "FILE_PATH=file1" >> $GITHUB_ENV
-          echo "FILE_SHA256=file2" >> $GITHUB_ENV
-          echo "FILE_PKG=file3" >> $GITHUB_ENV
-          echo "VERSION=test_upload" >> $GITHUB_ENV
-          
+                 
           sudo apt-get install paperkey gpg
+          
+          echo "Unpacking keys; exiting debug mode to redact..."
+          set +x
           
           echo "setup values"
           GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
           SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
           PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
-          GPG="gpg --homedir=$GPG_HOMEDIR"
+          GPG="gpg --homedir=$GPG_HOMEDIR --passphrase $CI_GPG_PASSPHRASE"
+          
+          # unpack public key
+          echo "$CI_PUB_KEY" | base64 --decode > "$PUBLIC_KEY_FILE"
+
+          # unpack secret key
+          echo "$CI_GPG_SECRET" | base64 --decode > "$SECRET_KEY_FILE"
+          
+          paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
+          | $GPG --import
+
+          echo "Secrets unpacked..."
+          set -x
           
           echo "some cmd"
-          $GPG -d --batch --passphrase $CI_SAMPLE_VALUE file1.gpg
+          $GPG --detach-sign --use-agent -u "${CI_GPG_KEY}" file1
           
           echo "cleaning up"
           shred "$GPG_HOMEDIR"
-          rm -rf "$GPG_HOMEDIR"
+          rm -rvf "$GPG_HOMEDIR"
           echo "script done"
