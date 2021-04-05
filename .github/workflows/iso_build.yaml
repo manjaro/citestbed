@@ -11,7 +11,7 @@ jobs:
       matrix:
         ##### EDIT ME #####  
         EDITION: [xfce,gnome,kde]
-        BRANCH: [stable]
+        BRANCH: [stable-staging]
         SCOPE: [minimal,full]
         ###################
     steps:
@@ -126,7 +126,7 @@ jobs:
           ##### EDIT ME #####
           KERNEL: "linux510"
           CODE_NAME: "Ornara"
-          VERSION: "21.0"
+          VERSION: "21.0.1"
           ###################
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
@@ -142,9 +142,11 @@ jobs:
           FILE_PATH=$(find /var/cache/manjaro-tools/iso -type f -name "*.iso" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
           mv -v $FILE_PATH $(basename $FILE_PATH)
           sha256sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha256
+          sha1sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha1
 
           echo "FILE_PATH=$(basename $FILE_PATH)" >> $GITHUB_ENV
           echo "FILE_SHA256=$(basename $FILE_PATH).sha256" >> $GITHUB_ENV
+          echo "FILE_SHA1=$(basename $FILE_PATH).sha1" >> $GITHUB_ENV
           
           FILE_PKG=$(find /var/cache/manjaro-tools/iso -type f -name "*-pkgs.txt" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
           mv -v $FILE_PKG .
@@ -169,11 +171,11 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ##### EDIT ME #####
-          PROJECT: "manjarolinux"
-          VERSION: "21.0-rc1"
+          PROJECT: "manjarotest"
+          VERSION: "21.0.1-rc1"
           ###################       
         run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION          
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION          
 #      - 
 #        name: Upload to OSDN
 #        env:
