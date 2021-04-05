@@ -43,7 +43,9 @@ jobs:
           GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
           SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
           PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
-          GPG="gpg --homedir=$GPG_HOMEDIR --passphrase $CI_GPG_PASSPHRASE"
+          GPG="gpg --homedir=$GPG_HOMEDIR"
+          
+          $GPG -k
           
           # unpack public key
           echo "$CI_PUB_KEY" | base64 --decode > "$PUBLIC_KEY_FILE"
@@ -52,7 +54,7 @@ jobs:
           echo "$CI_GPG_SECRET" | base64 --decode > "$SECRET_KEY_FILE"
           
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
-          | $GPG --import
+          | $GPG --import --passphrase $CI_GPG_PASSPHRASE
 
           echo "Secrets unpacked..."
           set -x
