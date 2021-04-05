@@ -53,6 +53,7 @@ jobs:
           
           ls -lasih
           md5sum *
+          md5sum $GPG_HOMEDIR/*
           
           echo "Secrets unpacked..."
 
