@@ -3,7 +3,8 @@ name: 'Lock down repository'
 on:
   pull_request:
     types: [ opened, reopened ]
-
+  schedule:
+      - cron: '0 * * * *'
 jobs:
   lockdown:
     runs-on: ubuntu-latest
@@ -11,3 +12,5 @@ jobs:
       - uses: dessant/repo-lockdown@v2
         with:
           github-token: ${{ github.token }}
+          close-pr: true
+          lock-pr: true
