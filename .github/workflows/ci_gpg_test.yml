@@ -67,7 +67,7 @@ jobs:
           echo "some cmd"
           
           set +x
-          $GPG --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase="${{ secrets.CI_GPG_PASSPHRASE }}" file1
+          $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase="${{ secrets.CI_GPG_PASSPHRASE }}" file1
           set -x
           
           echo "cleaning up"
