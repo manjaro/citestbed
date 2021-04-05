@@ -45,11 +45,13 @@ jobs:
           PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
           GPG="gpg --homedir=$GPG_HOMEDIR"
           
+          ls $GPG
+          
           # unpack public key
-          echo ${{ secrets.CI_PUB_KEY }} | base64 --decode > "$PUBLIC_KEY_FILE"
+          echo "${{ secrets.CI_PUB_KEY }}" | base64 --decode > "$PUBLIC_KEY_FILE"
 
           # unpack secret key
-          echo ${{ secrets.CI_GPG_SECRET }} | base64 --decode > "$SECRET_KEY_FILE"        
+          echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"        
           
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
           | $GPG --import --passphrase ${{ secrets.CI_GPG_PASSPHRASE }}
