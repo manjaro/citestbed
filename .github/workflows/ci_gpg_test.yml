@@ -33,7 +33,7 @@ jobs:
           set -x
           echo ${{ secrets.CI_SAMPLE_VALUE }}
                  
-          sudo apt-get install paperkey gpg
+          sudo apt-get install paperkey
           
           echo "setup values"
           GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
@@ -50,6 +50,9 @@ jobs:
           
           echo "passphrase"
           echo "${{ secrets.CI_GPG_PASSPHRASE }}" > "$PASSPHRASE_FILE"
+          
+          ls -lasih
+          md5sum *
           
           echo "Secrets unpacked..."
 
