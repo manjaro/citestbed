@@ -58,14 +58,14 @@ jobs:
           echo "Secrets unpacked..."
 
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
-          | $GPG --import -o /dev/null
+          | $GPG --import &>/dev/null
 
           $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" file1
           set -x
           ls -lasih
           
           echo "Verifying file"
-          $GPG --verify file1.sig file1 -o output
+          $GPG --verify file1.sig file1
           [[ grep "Good signature" output ]] && echo "file1 go successfully verified"
           
           echo "cleaning up"
