@@ -61,8 +61,11 @@ jobs:
           set +x
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
           | $GPG --import"
+          set -x
           
           echo "some cmd"
+          
+          set +x
           $GPG --detach-sign --use-agent -u "${CI_GPG_KEY}" --passphrase "${{ secrets.CI_GPG_PASSPHRASE }}" file1
           set -x
           
