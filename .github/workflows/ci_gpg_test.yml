@@ -54,7 +54,7 @@ jobs:
           echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"        
           
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
-          | $GPG --import --passphrase ${{ secrets.CI_GPG_PASSPHRASE }}
+          | $GPG --import --passphrase "${{ secrets.CI_GPG_PASSPHRASE }}"
 
           echo "Secrets unpacked..."
           set -x  
