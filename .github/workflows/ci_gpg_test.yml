@@ -53,7 +53,7 @@ jobs:
           echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"
           
           echo "passphrase"
-          echo "${{ secrets.CI_GPG_PASSPHRASE }}" | base64 --decode > "$PASSPHRASE_FILE"
+          echo "${{ secrets.CI_GPG_PASSPHRASE }}" > "$PASSPHRASE_FILE"
           
           echo "Secrets unpacked..."
 
