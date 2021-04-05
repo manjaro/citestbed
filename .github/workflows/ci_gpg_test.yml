@@ -43,9 +43,8 @@ jobs:
           GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
           SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
           PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
+          PASSPHRASE_FILE="$GPG_HOMEDIR/passphrase.file"
           GPG="gpg --homedir=$GPG_HOMEDIR --no-tty --batch --yes"
-          
-          ls $GPG_HOMEDIR
           
           echo "unpack public key"
           echo "${{ secrets.CI_PUB_KEY }}" | base64 --decode > "$PUBLIC_KEY_FILE"
@@ -53,21 +52,15 @@ jobs:
           echo "unpack secret key"
           echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"
           
+          echo "passphrase"
+          echo "${{ secrets.CI_GPG_PASSPHRASE }}" | base64 --decode > "$PASSPHRASE_FILE"
+          
           echo "Secrets unpacked..."
-          set -x 
-          
-          md5sum "$PUBLIC_KEY_FILE" 
-          md5sum "$SECRET_KEY_FILE"
-          
-          set +x
+
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
           | $GPG --import
-          set -x
-          
-          echo "some cmd"
-          
-          set +x
-          $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase="${{ secrets.CI_GPG_PASSPHRASE }}" file1
+
+          $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" file1
           set -x
           
           ls -lasih
