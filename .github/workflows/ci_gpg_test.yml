@@ -56,7 +56,8 @@ jobs:
           echo "Secrets unpacked..."
           set -x 
           
-          md5sum "$PUBLIC_KEY_FILE" "$SECRET_KEY_FILE"
+          md5sum "$PUBLIC_KEY_FILE" 
+          md5sum "$SECRET_KEY_FILE"
           
           set +x
           paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
@@ -66,7 +67,7 @@ jobs:
           echo "some cmd"
           
           set +x
-          $GPG --detach-sign --use-agent -u "${CI_GPG_KEY}" --passphrase "${{ secrets.CI_GPG_PASSPHRASE }}" file1
+          $GPG --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY}}" --passphrase "${{ secrets.CI_GPG_PASSPHRASE }}" file1
           set -x
           
           echo "cleaning up"
