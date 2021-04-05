@@ -62,11 +62,10 @@ jobs:
 
           $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" file1
           set -x
+          ls -lasih
           
           echo "Verifying file"
           $GPG --verify file1.sig
-          
-          ls -lasih
           
           echo "cleaning up"
           find "$GPG_HOMEDIR" -type f -exec shred {} \;
