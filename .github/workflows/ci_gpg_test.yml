@@ -38,6 +38,12 @@ jobs:
           echo "FILE_PKG=file3" >> $GITHUB_ENV
           echo "VERSION=test_upload" >> $GITHUB_ENV
           
-          sudo apt install paperkey gpg
+          sudo apt-get install paperkey gpg shred
+          
+          GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
+          SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
+          PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
+
+          gpg --homedir=$GPG_HOMEDIR"
           
           gpg -d --batch --passphrase $CI_SAMPLE_VALUE file1.gpg
