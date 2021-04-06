@@ -1,8 +1,5 @@
 name: ci_gpg_test
-on:
-  workflow_dispatch:
-#  schedule:
-#    - cron:  '30 6 1 * *'
+on: [pull_request]
 
 jobs:
   release:
