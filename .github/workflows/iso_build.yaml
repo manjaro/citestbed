@@ -153,6 +153,27 @@ jobs:
 
           echo "FILE_PKG=$(basename $FILE_PKG)" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
+          sudo apt-get install paperkey &>/dev/null
+          
+          GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
+          SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
+          PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
+          PASSPHRASE_FILE="$GPG_HOMEDIR/passphrase.file"
+          GPG="gpg --homedir=$GPG_HOMEDIR --no-tty --batch --yes"
+          
+          echo "${{ secrets.CI_PUB_KEY }}" | base64 --decode > "$PUBLIC_KEY_FILE"
+          echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"
+          echo "${{ secrets.CI_GPG_PASSPHRASE }}" > "$PASSPHRASE_FILE"
+          
+          paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
+          | $GPG --import &>/dev/null
+          $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" "$(basename $FILE_PATH)"
+          
+          echo "FILE_SIG=$(basename $FILE_PATH).sig" >> $GITHUB_ENV
+          
+          find "$GPG_HOMEDIR" -type f -exec shred {} \;
+          rm -rf "$GPG_HOMEDIR"       
       - 
         name: Add SSH key
         env:
@@ -171,11 +192,11 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ##### EDIT ME #####
-          PROJECT: "manjarotest"
-          VERSION: "21.0.1-rc1"
+          PROJECT: "manjaro"
+          VERSION: "21.0.1"
           ###################       
         run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION          
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION          
 #      - 
 #        name: Upload to OSDN
 #        env:
