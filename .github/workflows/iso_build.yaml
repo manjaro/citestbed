@@ -11,7 +11,7 @@ jobs:
       matrix:
         ##### EDIT ME #####  
         EDITION: [xfce,gnome,kde]
-        BRANCH: [stable-staging]
+        BRANCH: [stable]
         SCOPE: [minimal,full]
         ###################
     steps:
