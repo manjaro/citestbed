@@ -192,7 +192,7 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ##### EDIT ME #####
-          PROJECT: "manjaro"
+          PROJECT: "manjarolinux"
           VERSION: "21.0.1"
           ###################       
         run: |
