@@ -197,6 +197,15 @@ jobs:
           ###################       
         run: |
           rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION               
+      - 
+        name: Upload to CDN77
+        env:
+          ##### EDIT ME #####
+          VERSION: "21.0.1"
+          ###################       
+        run: |
+          echo ${{ secrets.CDN_PWD }} > rsync.pass
+          rsync -vaP --stats --password-file=rsync.pass -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.CDN_USER }}@${{ secrets.CDN_USER }}:/www/${{ matrix.EDITION }}/$VERSION   
 #      - 
 #        name: Upload to OSDN
 #        env:
