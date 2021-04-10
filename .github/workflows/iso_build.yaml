@@ -196,7 +196,18 @@ jobs:
           VERSION: "21.0.1"
           ###################       
         run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION          
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION
+      - 
+        name: Upload to CDN77
+        env:
+          ##### EDIT ME #####
+          VERSION: "21.0.1"
+          ###################       
+        run: |
+          sudo apt-get install sshpass &>/dev/null
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa ${{ secrets.CDN_HOST }} > ~/.ssh/known_hosts
+          sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/$VERSION
 #      - 
 #        name: Upload to OSDN
 #        env:
