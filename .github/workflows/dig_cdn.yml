@@ -13,4 +13,11 @@ jobs:
         run: |
           sudo apt-get install bind9
           dig download.manjaro.org ANY
+          sleep 3
+          dig 1298906785.rsc.cdn77.org ANY
+          sleep 3
+          dig 1298906785.rsc.cdn77.org ANY
+          sleep 3
+          dig 1298906785.rsc.cdn77.org ANY
+          sleep 3
           dig 1298906785.rsc.cdn77.org ANY
