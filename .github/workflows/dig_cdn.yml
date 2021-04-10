@@ -11,6 +11,6 @@ jobs:
       - 
         name: Dig CDN77  
         run: |
-          sudo apt-get install bind
+          sudo apt-get install bind9
           dig download.manjaro.org ANY
           dig 1298906785.rsc.cdn77.org ANY
