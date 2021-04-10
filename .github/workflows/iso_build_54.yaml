@@ -204,7 +204,7 @@ jobs:
           VERSION: "21.0.1"
           ###################       
         run: |
-          sudo apt-get install apt-get install sshpass &>/dev/null
+          sudo apt-get install sshpass &>/dev/null
           sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats --password-file=/home/runner/.rsync.pass -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/$VERSION
 #      - 
 #        name: Upload to OSDN
