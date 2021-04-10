@@ -1,0 +1,40 @@
+name: upload_cdn
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron:  '30 6 1 * *'
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04  
+    strategy:
+      matrix:
+        ##### EDIT ME #####  
+        EDITION: [xfce,gnome,kde]
+        BRANCH: [stable]
+        SCOPE: [minimal]
+        ###################
+    steps:
+      -
+        name: Build ISO
+        env:
+          EDITION: ${{ matrix.EDITION }}
+          BRANCH: ${{ matrix.BRANCH }}
+          SCOPE: ${{ matrix.SCOPE }}
+          ##### EDIT ME #####
+          KERNEL: "linux54"
+          CODE_NAME: "Ornara"
+          VERSION: "21.0.1"
+          ###################
+        run: |                
+          [ "$SCOPE" == "minimal" ] && unset SCOPE
+          echo "hallo"            
+      - 
+        name: Upload to CDN77
+        env:
+          ##### EDIT ME #####
+          VERSION: "21.0.1"
+          ###################       
+        run: |
+          sudo apt-get install sshpass &>/dev/null
+          sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/$VERSION
