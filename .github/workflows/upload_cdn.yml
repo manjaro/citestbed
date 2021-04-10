@@ -38,4 +38,5 @@ jobs:
         run: |
           sudo apt-get install sshpass &>/dev/null
           echo "test" > test-file
+          sed -i -e "/${{ secrets.CDN_HOST }}/d' ~/.ssh/known_hosts
           sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh -o StrictHostKeyChecking=no test-file ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/$VERSION
