@@ -1,0 +1,16 @@
+name: dig_cdn
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron:  '30 6 1 * *'
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04  
+    steps:        
+      - 
+        name: Dig CDN77  
+        run: |
+          sudo apt-get install bind
+          dig download.manjaro.org ANY
+          dig 1298906785.rsc.cdn77.org ANY
