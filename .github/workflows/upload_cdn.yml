@@ -40,4 +40,4 @@ jobs:
           echo "test" > test-file
           mkdir -p ~/.ssh
           ssh-keyscan -t rsa ${{ secrets.CDN_HOST }} >>~/.ssh/known_hosts
-          sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh -o StrictHostKeyChecking=no test-file ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/$VERSION
+          sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh test-file ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/$VERSION
