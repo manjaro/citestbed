@@ -1,0 +1,20 @@
+name: ping_cdn
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron:  '30 6 1 * *'
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04  
+    steps:        
+      - 
+        name: Ping CDN77  
+        run: |
+          ping download.eu.manjaro.org -c 1
+          sleep3
+          ping download.eu.manjaro.org -c 1
+          sleep3
+          ping 1376624012.rsc.cdn77.org -c 1
+          sleep3
+          ping 1376624012.rsc.cdn77.org -c 1
