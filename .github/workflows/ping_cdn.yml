@@ -11,9 +11,9 @@ jobs:
       - 
         name: Ping CDN77  
         run: |
-          ping download.eu.manjaro.org -c 1
+          ping download.manjaro.org -c 1
           sleep3
-          ping download.eu.manjaro.org -c 1
+          ping download.manjaro.org -c 1
       - name: Echo Git-Repo
         run: |
           echo "https://github.com/$GITHUB_REPOSITORY/releases/download/"
