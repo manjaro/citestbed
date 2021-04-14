@@ -14,3 +14,6 @@ jobs:
           ping download.eu.manjaro.org -c 1
           sleep3
           ping download.eu.manjaro.org -c 1
+      - name: Echo Git-Repo
+        run: |
+          echo "https://github.com/$GITHUB_REPOSITORY/releases/download/"
