@@ -7,13 +7,14 @@ on:
 jobs:
   release:
     runs-on: ubuntu-20.04  
-    steps:        
+    steps:  
+      - 
+        name: Echo Git-Repo
+        run: |
+          echo "https://github.com/$GITHUB_REPOSITORY/releases/download/"    
       - 
         name: Ping CDN77  
         run: |
           ping download.manjaro.org -c 1
           sleep3
           ping download.manjaro.org -c 1
-      - name: Echo Git-Repo
-        run: |
-          echo "https://github.com/$GITHUB_REPOSITORY/releases/download/"
