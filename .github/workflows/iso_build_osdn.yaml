@@ -1,4 +1,4 @@
-name: iso_build_osdn
+name: iso_build_sf
 on:
   workflow_dispatch:
 #  schedule:
@@ -43,20 +43,30 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           mkdir -p /home/runner/.ssh
-          ssh-keyscan frs.sourceforge.net >> /home/runner/.ssh/known_hosts
-          ssh-keyscan storage.osdn.net >> /home/runner/.ssh/known_hosts
+          ssh-keyscan -t rsa frs.sourceforge.net >> /home/runner/.ssh/known_hosts
+          ssh-keyscan -t rsa storage.osdn.net >> /home/runner/.ssh/known_hosts
           echo "${{ secrets.SF_PRIV_SSHKEY }}" > /home/runner/.ssh/github_actions
           echo "${{ secrets.OSDN_PRIV_SSHKEY }}" >> /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add /home/runner/.ssh/github_actions       
+          ssh-add /home/runner/.ssh/github_actions
       - 
-        name: Upload to OSDN
+        name: Upload to SF
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ##### EDIT ME #####
-          PROJECT: "manjaro"
-          ###################       
+          PROJECT: "manjarolinux"
+          ###################    
         run: |
           DATE=$(date +%y%m%d)
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}-$DATE
+          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}-$DATE
+#      - 
+#        name: Upload to OSDN
+#        env:
+#          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+#          ##### EDIT ME #####
+#          PROJECT: "manjaro"
+#          ###################       
+#        run: |
+#          DATE=$(date +%y%m%d)
+#          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}-$DATE
