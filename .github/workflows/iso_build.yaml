@@ -19,7 +19,7 @@ jobs:
         name: Install build-dependencies
         run: |
           sudo apt-get update
-          sudo apt install gdisk zip systemd-container bmap-tools asciidoc libarchive-tools git build-essential cmake libarchive-dev pkg-config libcurl4-openssl-dev libgpgme-dev libssl-dev fakeroot dh-autoreconf haveged os-prober kwalify dosfstools libisoburn1 squashfs-tools docbook2x
+          sudo apt install gdisk zip systemd-container bmap-tools asciidoc libarchive-tools git build-essential cmake libarchive-dev pkg-config libcurl4-openssl-dev libgpgme-dev libssl-dev fakeroot dh-autoreconf haveged os-prober kwalify dosfstools libisoburn1 squashfs-tools docbook2x mktorrent
 
       -
         name: Install pacman
@@ -126,7 +126,7 @@ jobs:
           ##### EDIT ME #####
           KERNEL: "linux510"
           CODE_NAME: "Ornara"
-          VERSION: "21.0.1"
+          VERSION: "21.0.2"
           ###################
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
@@ -141,12 +141,16 @@ jobs:
           
           FILE_PATH=$(find /var/cache/manjaro-tools/iso -type f -name "*.iso" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
           mv -v $FILE_PATH $(basename $FILE_PATH)
+          
+          mktorrent -v -a udp://tracker.opentrackr.org:1337 -w https://download.manjaro.org/$EDITION/$VERSION/$(basename $FILE_PATH) -o $(basename $FILE_PATH).torrent $(basename $FILE_PATH)
+          
           sha256sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha256
           sha1sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha1
 
-          echo "FILE_PATH=$(basename $FILE_PATH)" >> $GITHUB_ENV
+          echo "FILE_ISO=$(basename $FILE_PATH)" >> $GITHUB_ENV
           echo "FILE_SHA256=$(basename $FILE_PATH).sha256" >> $GITHUB_ENV
           echo "FILE_SHA1=$(basename $FILE_PATH).sha1" >> $GITHUB_ENV
+          echo "FILE_TORRENT=$(basename $FILE_PATH).torrent" >> $GITHUB_ENV
           
           FILE_PKG=$(find /var/cache/manjaro-tools/iso -type f -name "*-pkgs.txt" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
           mv -v $FILE_PKG .
@@ -173,7 +177,7 @@ jobs:
           echo "FILE_SIG=$(basename $FILE_PATH).sig" >> $GITHUB_ENV
           
           find "$GPG_HOMEDIR" -type f -exec shred {} \;
-          rm -rf "$GPG_HOMEDIR"       
+          rm -rf "$GPG_HOMEDIR"      
       - 
         name: Add SSH key
         env:
@@ -188,33 +192,27 @@ jobs:
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           ssh-add /home/runner/.ssh/github_actions
       - 
+        name: Upload to CDN77     
+        run: |
+          sudo apt-get install sshpass &>/dev/null
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa ${{ secrets.CDN_HOST }} > ~/.ssh/known_hosts
+          sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/${{ env.VERSION }}
+      - 
         name: Upload to SF
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ##### EDIT ME #####
           PROJECT: "manjarolinux"
-          VERSION: "21.0.1"
-          ###################       
+          ###################    
         run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/$VERSION
-      - 
-        name: Upload to CDN77
-        env:
-          ##### EDIT ME #####
-          VERSION: "21.0.1"
-          ###################       
-        run: |
-          sudo apt-get install sshpass &>/dev/null
-          mkdir -p ~/.ssh
-          ssh-keyscan -t rsa ${{ secrets.CDN_HOST }} > ~/.ssh/known_hosts
-          sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/$VERSION
+          rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}
 #      - 
 #        name: Upload to OSDN
 #        env:
 #          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 #          ##### EDIT ME #####
 #          PROJECT: "manjaro"
-#          VERSION: "21.0-rc1"
 #          ###################       
 #        run: |
-#          rsync -vaP --stats -e ssh ${{ env.FILE_PATH }} ${{ env.FILE_PKG }} ${{ env.FILE_SHA256 }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/$VERSION
+#          rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}
