@@ -19,7 +19,7 @@ jobs:
         name: Install build-dependencies
         run: |
           sudo apt-get update
-          sudo apt install gdisk zip systemd-container bmap-tools asciidoc libarchive-tools git build-essential cmake libarchive-dev pkg-config libcurl4-openssl-dev libgpgme-dev libssl-dev fakeroot dh-autoreconf haveged os-prober kwalify dosfstools libisoburn1 squashfs-tools docbook2x mktorrent
+          sudo apt install gdisk zip systemd-container bmap-tools asciidoc libarchive-tools git build-essential cmake libarchive-dev pkg-config libcurl4-openssl-dev libgpgme-dev libssl-dev fakeroot dh-autoreconf haveged os-prober kwalify dosfstools libisoburn1 squashfs-tools docbook2x mktorrent sshpass
 
       -
         name: Install pacman
@@ -186,6 +186,7 @@ jobs:
           mkdir -p /home/runner/.ssh
           ssh-keyscan -t rsa frs.sourceforge.net >> /home/runner/.ssh/known_hosts
           ssh-keyscan -t rsa storage.osdn.net >> /home/runner/.ssh/known_hosts
+          ssh-keyscan -t rsa ${{ secrets.CDN_HOST }} >> /home/runner/.ssh/known_hosts
           echo "${{ secrets.SF_PRIV_SSHKEY }}" > /home/runner/.ssh/github_actions
           echo "${{ secrets.OSDN_PRIV_SSHKEY }}" >> /home/runner/.ssh/github_actions
           chmod 600 /home/runner/.ssh/github_actions
@@ -193,11 +194,7 @@ jobs:
           ssh-add /home/runner/.ssh/github_actions
       - 
         name: Upload to CDN77     
-        run: |
-          sudo apt-get install sshpass &>/dev/null
-          mkdir -p ~/.ssh
-          ssh-keyscan -t rsa ${{ secrets.CDN_HOST }} > ~/.ssh/known_hosts
-          sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/${{ env.VERSION }}
+        run: sshpass -p "${{ secrets.CDN_PWD }}" rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SIG }} ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ matrix.EDITION }}/${{ env.VERSION }}
       - 
         name: Upload to SF
         env:
@@ -205,8 +202,7 @@ jobs:
           ##### EDIT ME #####
           PROJECT: "manjarolinux"
           ###################    
-        run: |
-          rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}
+        run: rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}
 #      - 
 #        name: Upload to OSDN
 #        env:
@@ -214,5 +210,4 @@ jobs:
 #          ##### EDIT ME #####
 #          PROJECT: "manjaro"
 #          ###################       
-#        run: |
-#          rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}
+#        run: rsync -vaP --stats -e ssh ${{ env.FILE_ISO }} ${{ env.FILE_PKG }} ${{ env.FILE_TORRENT }} ${{ env.FILE_SHA1 }} ${{ env.FILE_SHA256 }} ${{ env.FILE_SIG }} ${{ secrets.OSDN_USER_NAME }}@storage.osdn.net:/storage/groups/m/ma/$PROJECT/${{ matrix.EDITION }}/${{ env.VERSION }}
