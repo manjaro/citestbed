@@ -142,7 +142,7 @@ jobs:
           FILE_PATH=$(find /var/cache/manjaro-tools/iso -type f -name "*.iso" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
           mv -v $FILE_PATH $(basename $FILE_PATH)
           
-          mktorrent -v -a udp://tracker.opentrackr.org:1337 -w https://download.manjaro.org/$EDITION/$VERSION/$(basename $FILE_PATH) -o $(basename $FILE_PATH).torrent $(basename $FILE_PATH)
+          mktorrent -v -a udp://tracker.opentrackr.org:1337 -l 21 -w https://download.manjaro.org/$EDITION/$VERSION/$(basename $FILE_PATH) -o $(basename $FILE_PATH).torrent $(basename $FILE_PATH)
           
           sha256sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha256
           sha1sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha1
