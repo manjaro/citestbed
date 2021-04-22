@@ -1,0 +1,100 @@
+name: iso_build
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron:  '30 6 1 * *'
+
+jobs:
+  prepare_release:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+      - 
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          format: 'YYYYMMDDHHmm'
+      - 
+        id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.time.outputs.time }}
+          release_name: Release ${{ steps.time.outputs.time }}
+          draft: false
+          prerelease: false
+    outputs:
+      upload_url: ${{ steps.release.outputs.upload_url }}
+      release_id: ${{ steps.release.outputs.id }}
+
+  release:
+    runs-on: ubuntu-20.04  
+    strategy:
+      matrix:
+        ##### EDIT ME #####  
+        EDITION: [manjaro-desktop,manjaro-kde-desktop,manjaro-gnome-desktop]
+        ###################
+    steps:
+      -
+        name: Install build-dependencies
+        run: |
+          sudo apt-get update
+      -
+        name: Install Linux Scripts
+        run: |          
+          sudo git clone https://github.com/Shells-com/linux-scripts.git
+          cd linux-scripts
+          sudo chmod +x *.sh
+      -
+        name: Build Shell Images
+        env:
+          EDITION: ${{ matrix.EDITION }}
+        run: sudo ./build_image.sh $EDITION
+      - 
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          format: 'YYYYMMDD'        
+      -
+        name: Postprocess Shell Images
+        env:
+          EDITION: ${{ matrix.EDITION }}
+          VERSION: ${{ steps.time.outputs.time }}
+        run: |                
+          FILE_PATH=$(find ./ -type f -name "*.shells" -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1 {print $2}')
+          mv $FILE_PATH ./$(basename $FILE_PATH)
+          sha256sum $(basename $FILE_PATH) > $(basename $FILE_PATH).sha256
+          echo "FILE_PATH=$(basename $FILE_PATH)" >> $GITHUB_ENV
+          echo "FILE_SHA256=$(basename $FILE_PATH).sha256" >> $GITHUB_ENV    
+      - 
+        id: upload_release_zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.prepare_release.outputs.upload_url }}
+          asset_path: ./${{ env.FILE_PATH }}.shells
+          asset_name: ${{ env.FILE_PATH }}.shells
+          asset_content_type: application/x-xz
+      - 
+        id: upload_sha256
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.prepare_release.outputs.upload_url }}
+          asset_path: ./${{ env.FILE_SHA256 }}
+          asset_name: ${{ env.FILE_SHA256 }}
+          asset_content_type: text/plain
+      - 
+        name: rollback_release
+        if: failure()
+        uses: author/action-rollback@stable
+        with:
+          release_id: ${{ needs.prepare_release.outputs.release_id }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}                    
