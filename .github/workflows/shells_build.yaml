@@ -43,7 +43,7 @@ jobs:
         name: Install build-dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install php qemu-img qemu-nbd parted
+          sudo apt-get install php qemu parted
       -
         name: Install Linux Scripts
         run: |          
