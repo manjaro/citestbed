@@ -44,7 +44,7 @@ jobs:
         name: Install build-dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install php qemu parted
+          sudo apt-get install php qemu-utils parted
       -
         name: Install Linux Scripts
         run: |          
