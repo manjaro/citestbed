@@ -6,7 +6,7 @@ on:
 
 jobs:
   prepare_release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - 
         uses: styfle/cancel-workflow-action@0.8.0
@@ -32,7 +32,7 @@ jobs:
       release_id: ${{ steps.release.outputs.id }}
 
   release:
-    runs-on: ubuntu-20.04  
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         ##### EDIT ME #####  
@@ -43,6 +43,7 @@ jobs:
         name: Install build-dependencies
         run: |
           sudo apt-get update
+          sudo apt-get install php qemu-img qemu-nbd parted
       -
         name: Install Linux Scripts
         run: |          
@@ -53,7 +54,9 @@ jobs:
         name: Build Shell Images
         env:
           EDITION: ${{ matrix.EDITION }}
-        run: sudo ./build_image.sh $EDITION
+        run: |
+          cd linux-scripts
+          sudo ./build_image.sh $EDITION
       - 
         id: time
         uses: nanzm/get-time-action@v1.1
