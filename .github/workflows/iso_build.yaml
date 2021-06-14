@@ -120,7 +120,7 @@ jobs:
           ##### EDIT ME #####
           KERNEL: "linux510"
           CODE_NAME: "Ornara"
-          VERSION: "21.0.6"
+          VERSION: "21.0.7"
           ###################
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
