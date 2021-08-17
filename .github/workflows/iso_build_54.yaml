@@ -88,10 +88,11 @@ jobs:
           install_cal_tools
       -
         name: Install mkinitcpio
-        run: |          
-          sudo wget https://git.archlinux.org/mkinitcpio.git/snapshot/mkinitcpio-29.tar.gz
-          sudo tar -xf mkinitcpio-29.tar.gz
-          sudo make -C mkinitcpio-29 install
+        run: |
+          VERSION=30
+          sudo wget https://gitlab.archlinux.org/mkinitcpio/mkinitcpio/-/archive/v${VERSION}/mkinitcpio-v${VERSION}.tar.gz
+          sudo tar -xf mkinitcpio-v${VERSION}.tar.gz
+          sudo make -C mkinitcpio-v${VERSION} install
           sudo sed -i -e 's|File|Path|' /usr/share/libalpm/hooks/*hook
       -
         name: Install manjaro-tools
