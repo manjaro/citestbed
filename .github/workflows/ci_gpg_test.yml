@@ -60,13 +60,14 @@ jobs:
           $GPG --verify file1.sig file1
           
           # if is not yet supported in composite https://github.com/actions/runner/blob/main/docs/adrs/0549-composite-run-steps.md#if-condition
-          if [ -z "${{ secrets.GPG_SECRET_KEY_BASE64 }}" ]; then 
+          if [ -z "${{ secrets.CI_PRIV_KEY }}" ]; then 
              echo "## no gpg secret given"
              exit 0
           fi
           echo "## gpg signing"
-          cat <(echo -e "${{ secrets.GPG_SECRET_KEY_BASE64 }}" | base64 --decode) | gpg --batch --import
-          gpg --pinentry-mode loopback --passphrase "${{ secrets.CI_GPG_PASSPHRASE }}" --detach-sign file1         
+          cat <(echo -e "${{ secrets.CI_PRIV_KEY }}" | base64 --decode) | gpg --batch --import
+          $GPG --pinentry-mode loopback --passphrase "${{ secrets.CI_GPG_PASSPHRASE }}" --detach-sign file2      
+          $GPG --verify file2.sig file2
           
           echo "cleaning up"
           find "$GPG_HOMEDIR" -type f -exec shred {} \;
