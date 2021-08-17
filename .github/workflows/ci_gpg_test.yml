@@ -33,46 +33,33 @@ jobs:
           echo "file2" > file2
           echo "file3" > file3
                  
-          #sudo apt-get install paperkey gpg
+          sudo apt-get install paperkey gpg
           
-          #echo "setup values"
-          #GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
-          #SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
-          #PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
-          #PASSPHRASE_FILE="$GPG_HOMEDIR/passphrase.file"
-          #GPG="gpg --homedir=$GPG_HOMEDIR --no-tty --batch --yes"
+          echo "setup values"
+          GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
+          SECRET_KEY_FILE="$GPG_HOMEDIR/secret.key"
+          PUBLIC_KEY_FILE="$GPG_HOMEDIR/public_key.gpg"
+          PASSPHRASE_FILE="$GPG_HOMEDIR/passphrase.file"
+          GPG="gpg --homedir=$GPG_HOMEDIR --no-tty --batch --yes"
           
-          #echo "unpack public key"
-          #echo "${{ secrets.CI_PUB_KEY }}" | base64 --decode > "$PUBLIC_KEY_FILE"
-
-          #echo "unpack secret key"
-          #echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"
+          echo "unpack public key"
+          echo "${{ secrets.CI_PUB_KEY }}" | base64 --decode > "$PUBLIC_KEY_FILE"
+          echo "unpack secret key"
+          echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"
           
-          #echo "passphrase"
-          #echo "${{ secrets.CI_GPG_PASSPHRASE }}" > "$PASSPHRASE_FILE"
+          echo "passphrase"
+          echo "${{ secrets.CI_GPG_PASSPHRASE }}" > "$PASSPHRASE_FILE"
           
-          #echo "Secrets unpacked..."
-
-          #paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
-          #| $GPG --import &>/dev/null
-
-          #$GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" file1
-          
-          # if is not yet supported in composite https://github.com/actions/runner/blob/main/docs/adrs/0549-composite-run-steps.md#if-condition
-          if [ -z "${{ secrets.GPG_SECRET_KEY_BASE64 }}" ]; then 
-             echo "## no gpg secret given"
-             exit 0
-          fi
-          echo "## gpg signing"
-          cat <(echo -e "${{ secrets.GPG_SECRET_KEY_BASE64 }}" | base64 --decode) | gpg --batch --import
-          gpg --pinentry-mode loopback --passphrase "${{ secrets.CI_GPG_PASSPHRASE }}" --detach-sign file1
-
+          echo "Secrets unpacked..."
+          paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
+          | $GPG --import &>/dev/null
+          $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" file1
           ls -lasih
           
           echo "Verifying file"
           $GPG --verify file1.sig file1
           
-          #echo "cleaning up"
-          #find "$GPG_HOMEDIR" -type f -exec shred {} \;
-          #rm -rf "$GPG_HOMEDIR"
-          #echo "script done"
+          echo "cleaning up"
+          find "$GPG_HOMEDIR" -type f -exec shred {} \;
+          rm -rf "$GPG_HOMEDIR"
+          echo "script done"
