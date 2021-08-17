@@ -33,7 +33,7 @@ jobs:
           echo "file2" > file2
           echo "file3" > file3
                  
-          sudo apt-get install paperkey gpg
+          #sudo apt-get install paperkey gpg
           
           #echo "setup values"
           #GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
