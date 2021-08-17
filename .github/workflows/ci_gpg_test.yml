@@ -72,7 +72,7 @@ jobs:
           echo "Verifying file"
           $GPG --verify file1.sig file1
           
-          echo "cleaning up"
-          find "$GPG_HOMEDIR" -type f -exec shred {} \;
-          rm -rf "$GPG_HOMEDIR"
-          echo "script done"
+          #echo "cleaning up"
+          #find "$GPG_HOMEDIR" -type f -exec shred {} \;
+          #rm -rf "$GPG_HOMEDIR"
+          #echo "script done"
