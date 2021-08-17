@@ -27,8 +27,8 @@ jobs:
           version: "21.1.0"
           kernel: linux513
           code-name: "Pahvo"
-          gpg-secret-key-base64: ${{ secrets.GPG_SECRET_KEY_BASE64 }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg-secret-key-base64: ${{ secrets.CI_GPG_SECRET }}
+          gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
           cdn77-host: ${{ secrets.CDN_HOST }}
           cdn77-user: ${{ secrets.CDN_USER }}
           cdn77-pwd: ${{ secrets.CDN_PWD }}
