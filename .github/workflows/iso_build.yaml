@@ -118,9 +118,9 @@ jobs:
           BRANCH: ${{ matrix.BRANCH }}
           SCOPE: ${{ matrix.SCOPE }}
           ##### EDIT ME #####
-          KERNEL: "linux510"
-          CODE_NAME: "Ornara"
-          VERSION: "21.0.7"
+          KERNEL: "linux513"
+          CODE_NAME: "Pahvo"
+          VERSION: "21.1.0"
           ###################
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
@@ -129,13 +129,7 @@ jobs:
           sudo sed -i -e 's|iso_name=$(get_osid)|iso_name=manjaro|g' /usr/lib/manjaro-tools/util.sh
           sudo sed -i -e "s|build_mirror='https://manjaro.moson.eu'|build_mirror='https://mirror.easyname.at/manjaro'|g" /usr/lib/manjaro-tools/util.sh
           sudo sed -i -e "s|dist_release=\$(get_release)|dist_release=$VERSION|g" /usr/lib/manjaro-tools/util.sh
-          sudo sed -i -e "s|dist_codename=\$(get_codename)|dist_codename=\"$CODE_NAME\"|g" /usr/lib/manjaro-tools/util.sh
-          
-          if [ $EDITION == "gnome" ]; then
-          cd iso-profiles
-          sudo git checkout 21.0.x
-          cd ..
-          fi         
+          sudo sed -i -e "s|dist_codename=\$(get_codename)|dist_codename=\"$CODE_NAME\"|g" /usr/lib/manjaro-tools/util.sh      
              
           sudo buildiso ${SCOPE:+-f} -p $EDITION -b $BRANCH -k $KERNEL
           
