@@ -24,7 +24,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.1.5"
+          version: "21.1.6"
           kernel: linux54
           code-name: "Pahvo"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
