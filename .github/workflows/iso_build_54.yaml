@@ -19,7 +19,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - id: image-build
-        uses: manjaro/manjaro-iso-action@v2.5
+        uses: manjaro/manjaro-iso-action@master
         with:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
