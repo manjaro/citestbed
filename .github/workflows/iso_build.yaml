@@ -24,9 +24,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.1.6"
-          kernel: linux513
-          code-name: "Pahvo"
+          version: "21.2pre1"
+          kernel: linux515
+          code-name: "Qonos"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
           cdn77-host: ${{ secrets.CDN_HOST }}
