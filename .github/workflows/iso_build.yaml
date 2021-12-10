@@ -11,6 +11,7 @@ jobs:
       matrix:
         ##### EDIT ME #####
         EDITION: [xfce,gnome,kde]
+        KERNEL: [linux54,linux510,linux515]
         BRANCH: [stable]
         SCOPE: [minimal,full]
         ###################
@@ -24,8 +25,8 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.2pre1"
-          kernel: linux515
+          version: "21.2rc1"
+          kernel: ${{ matrix.kernel }}
           code-name: "Qonos"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
