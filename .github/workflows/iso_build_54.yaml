@@ -1,4 +1,4 @@
-name: iso_build_54
+name: iso_build
 on:
   workflow_dispatch:
 #  schedule:
@@ -10,9 +10,10 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [xfce,gnome,kde]
+        EDITION: [kde,gnome,xfce]
+        KERNEL: [linux510,linux54]
         BRANCH: [stable]
-        SCOPE: [minimal,full]
+        SCOPE: [minimal]
         ###################
     steps:
       - uses: styfle/cancel-workflow-action@0.9.1
@@ -24,8 +25,8 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.2pre1"
-          kernel: linux54
+          version: "21.2.0"
+          kernel: ${{ matrix.kernel }}
           code-name: "Qonos"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
