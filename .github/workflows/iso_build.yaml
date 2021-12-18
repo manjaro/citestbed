@@ -11,9 +11,9 @@ jobs:
       matrix:
         ##### EDIT ME #####
         EDITION: [kde,gnome,xfce]
-        KERNEL: [linux510,linux54]
+        KERNEL: [linux515]
         BRANCH: [stable]
-        SCOPE: [minimal]
+        SCOPE: [minimal,full]
         ###################
     steps:
       - uses: styfle/cancel-workflow-action@0.9.1
