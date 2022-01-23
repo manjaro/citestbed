@@ -1,4 +1,4 @@
-name: iso_build
+name: iso_build_54_510
 on:
   workflow_dispatch:
 #  schedule:
@@ -25,7 +25,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.2.1"
+          version: "21.2.2"
           kernel: ${{ matrix.kernel }}
           code-name: "Qonos"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
