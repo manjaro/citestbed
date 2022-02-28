@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [gnome]
-        KERNEL: [linux510,linux54]
+        EDITION: [gnome,kde,xfce]
+        KERNEL: [linux510]
         BRANCH: [stable]
         SCOPE: [minimal]
         ###################
