@@ -11,7 +11,7 @@ jobs:
       matrix:
         ##### EDIT ME #####
         EDITION: [gnome,kde,xfce]
-        KERNEL: [linux510]
+        KERNEL: [linux54]
         BRANCH: [stable]
         SCOPE: [minimal]
         ###################
