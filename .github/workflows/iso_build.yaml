@@ -41,10 +41,10 @@ jobs:
         run: |
           sshpass -p "${{ secrets.CDN_PWD }}" rsync --delete -vaP --stats \
               -e ssh $(mktemp) ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ env.edition }}/${{ env.version }}
-      - name: rollback sourceforge upload
-        if: ${{ failure() || cancelled() }}
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          rsync --delete -vaP --stats \
-              -e ssh $(mktemp) ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/${{ env.sf-project }}/${{ env.edition }}/${{ env.version }}
+#      - name: rollback sourceforge upload
+#        if: ${{ failure() || cancelled() }}
+#        env:
+#          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+#        run: |
+#          rsync --delete -vaP --stats \
+#              -e ssh $(mktemp) ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/${{ env.sf-project }}/${{ env.edition }}/${{ env.version }}
