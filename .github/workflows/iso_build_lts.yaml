@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [kde] #gnome,kde,xfce]
+        EDITION: [gnome,kde,xfce]
         KERNEL: [linux54,linux510]
         BRANCH: [stable]
         SCOPE: [minimal]
@@ -25,7 +25,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.3.0"
+          version: "21.3.1"
           kernel: ${{ matrix.kernel }}
           code-name: "Ruah"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
