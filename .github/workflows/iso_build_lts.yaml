@@ -25,7 +25,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "21.3.6"
+          version: "21.3.7"
           kernel: ${{ matrix.kernel }}
           code-name: "Ruah"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
@@ -33,18 +33,18 @@ jobs:
           cdn77-host: ${{ secrets.CDN_HOST }}
           cdn77-user: ${{ secrets.CDN_USER }}
           cdn77-pwd: ${{ secrets.CDN_PWD }}
-#          sf-project: manjarolinux
-#          sf-user: ${{ secrets.SF_USER_NAME }}
-#          sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
+          sf-project: manjarolinux
+          sf-user: ${{ secrets.SF_USER_NAME }}
+          sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
       - name: rollback cdn77 upload
         if: ${{ failure() || cancelled() }}
         run: |
           sshpass -p "${{ secrets.CDN_PWD }}" rsync --delete -vaP --stats \
               -e ssh $(mktemp) ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ env.edition }}/${{ env.version }}
-#      - name: rollback sourceforge upload
-#        if: ${{ failure() || cancelled() }}
-#        env:
-#          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-#        run: |
-#          rsync --delete -vaP --stats \
-#              -e ssh $(mktemp) ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/${{ env.sf-project }}/${{ env.edition }}/${{ env.version }}
+      - name: rollback sourceforge upload
+        if: ${{ failure() || cancelled() }}
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          rsync --delete -vaP --stats \
+              -e ssh $(mktemp) ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/${{ env.sf-project }}/${{ env.edition }}/${{ env.version }}
