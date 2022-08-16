@@ -26,9 +26,6 @@ jobs:
           CODE_NAME: "Ornara"
           VERSION: ".0.99"
           ###################
-          sf-project: manjarolinux
-          sf-user: ${{ secrets.SF_USER_NAME }}
-          sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
         run: |                
           [ "$SCOPE" == "minimal" ] && unset SCOPE
           echo "hallo"            
@@ -39,6 +36,9 @@ jobs:
           VERSION: ".0.99"
           ###################
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          sf-project: manjarolinux
+          sf-user: ${{ secrets.SF_USER_NAME }}
+          sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
         run: |
           echo "## ssh setup"
           mkdir -p /home/runner/.ssh
@@ -52,7 +52,6 @@ jobs:
         
           ssh-keyscan -t rsa frs.sourceforge.net >> /home/runner/.ssh/known_hosts
           echo "${{ inputs.sf-key }}" >> /home/runner/.ssh/github_actions
-          cat /home/runner/.ssh/github_actions
           ssh-add /home/runner/.ssh/github_actions
           ## create target dir
           rsync -vaP --stats -e ssh ${{ inputs.edition }} \
