@@ -52,4 +52,4 @@ jobs:
           ssh-add /home/runner/.ssh/github_actions
           ## upload
           rsync -vaP --stats -e ssh .test-file \
-            ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/manjarolinux/
+            ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/pfs/project/m/ma/manjarolinux/
