@@ -1,0 +1,61 @@
+name: upload_sf
+on:
+  workflow_dispatch:
+#  schedule:
+#    - cron:  '30 6 1 * *'
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04  
+    strategy:
+      matrix:
+        ##### EDIT ME #####  
+        EDITION: [xfce]
+        BRANCH: [stable]
+        SCOPE: [minimal]
+        ###################
+    steps:
+      -
+        name: Build ISO
+        env:
+          EDITION: ${{ matrix.EDITION }}
+          BRANCH: ${{ matrix.BRANCH }}
+          SCOPE: ${{ matrix.SCOPE }}
+          ##### EDIT ME #####
+          KERNEL: "linux54"
+          CODE_NAME: "Ornara"
+          VERSION: ".0.99"
+          ###################
+          sf-project: manjarolinux
+          sf-user: ${{ secrets.SF_USER_NAME }}
+          sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
+        run: |                
+          [ "$SCOPE" == "minimal" ] && unset SCOPE
+          echo "hallo"            
+      - 
+        name: Upload to SF
+        env:
+          ##### EDIT ME #####
+          VERSION: ".0.99"
+          ###################       
+        run: |
+        echo "## ssh setup"
+        mkdir -p /home/runner/.ssh
+        touch /home/runner/.ssh/github_actions
+        chmod 600 /home/runner/.ssh/github_actions
+        ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+        
+        echo "test" > test-file
+        
+        echo "## sourceforge upload"
+        
+        ssh-keyscan -t rsa frs.sourceforge.net >> /home/runner/.ssh/known_hosts
+        echo "${{ inputs.sf-key }}" >> /home/runner/.ssh/github_actions
+        ssh-add /home/runner/.ssh/github_actions
+        ## create target dir
+        rsync -vaP --stats -e ssh ${{ inputs.edition }} \
+          ${{ inputs.sf-user }}@frs.sourceforge.net:/home/frs/project/${{ inputs.sf-project }}/
+        ## upload
+        rsync -vaP --stats -e ssh test-file \
+          ${{ inputs.sf-user }}@frs.sourceforge.net:/home/frs/project/${{ inputs.sf-project }}/${{ inputs.edition }}/${{ inputs.version }}/
+
