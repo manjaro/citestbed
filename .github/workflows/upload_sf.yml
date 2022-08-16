@@ -43,7 +43,7 @@ jobs:
           chmod 600 /home/runner/.ssh/github_actions
           ssh-agent -a /tmp/ssh_agent.sock > /dev/null
         
-          echo "test" > .test-file
+          echo "test" > test-file
         
           echo "## sourceforge upload"
         
@@ -51,5 +51,5 @@ jobs:
           echo "${{ secrets.SF_PRIV_SSHKEY }}" >> /home/runner/.ssh/github_actions
           ssh-add /home/runner/.ssh/github_actions
           ## upload
-          rsync -vaP --stats -e ssh .test-file \
+          rsync -vaP --stats -e ssh test-file \
             ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/manjarolinux/
