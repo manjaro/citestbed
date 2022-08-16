@@ -36,9 +36,6 @@ jobs:
           VERSION: ".0.99"
           ###################
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          sf-project: manjarolinux
-          sf-user: ${{ secrets.SF_USER_NAME }}
-          sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
         run: |
           echo "## ssh setup"
           mkdir -p /home/runner/.ssh
@@ -46,16 +43,13 @@ jobs:
           chmod 600 /home/runner/.ssh/github_actions
           ssh-agent -a /tmp/ssh_agent.sock > /dev/null
         
-          echo "test" > test-file
+          echo "test" > .test-file
         
           echo "## sourceforge upload"
         
           ssh-keyscan -t rsa frs.sourceforge.net >> /home/runner/.ssh/known_hosts
-          echo "${{ inputs.sf-key }}" >> /home/runner/.ssh/github_actions
+          echo "${{ secrets.SF_PRIV_SSHKEY }}" >> /home/runner/.ssh/github_actions
           ssh-add /home/runner/.ssh/github_actions
-          ## create target dir
-          rsync -vaP --stats -e ssh ${{ inputs.edition }} \
-            ${{ inputs.sf-user }}@frs.sourceforge.net:/home/frs/project/${{ inputs.sf-project }}/
           ## upload
-          rsync -vaP --stats -e ssh test-file \
-            ${{ inputs.sf-user }}@frs.sourceforge.net:/home/frs/project/${{ inputs.sf-project }}/${{ inputs.edition }}/${{ inputs.version }}/
+          rsync -vaP --stats -e ssh .test-file \
+            ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/manjarolinux
