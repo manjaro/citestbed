@@ -39,23 +39,22 @@ jobs:
           VERSION: ".0.99"
           ###################       
         run: |
-        echo "## ssh setup"
-        mkdir -p /home/runner/.ssh
-        touch /home/runner/.ssh/github_actions
-        chmod 600 /home/runner/.ssh/github_actions
-        ssh-agent -a /tmp/ssh_agent.sock > /dev/null
+          echo "## ssh setup"
+          mkdir -p /home/runner/.ssh
+          touch /home/runner/.ssh/github_actions
+          chmod 600 /home/runner/.ssh/github_actions
+          ssh-agent -a /tmp/ssh_agent.sock > /dev/null
         
-        echo "test" > test-file
+          echo "test" > test-file
         
-        echo "## sourceforge upload"
+          echo "## sourceforge upload"
         
-        ssh-keyscan -t rsa frs.sourceforge.net >> /home/runner/.ssh/known_hosts
-        echo "${{ inputs.sf-key }}" >> /home/runner/.ssh/github_actions
-        ssh-add /home/runner/.ssh/github_actions
-        ## create target dir
-        rsync -vaP --stats -e ssh ${{ inputs.edition }} \
-          ${{ inputs.sf-user }}@frs.sourceforge.net:/home/frs/project/${{ inputs.sf-project }}/
-        ## upload
-        rsync -vaP --stats -e ssh test-file \
-          ${{ inputs.sf-user }}@frs.sourceforge.net:/home/frs/project/${{ inputs.sf-project }}/${{ inputs.edition }}/${{ inputs.version }}/
-
+          ssh-keyscan -t rsa frs.sourceforge.net >> /home/runner/.ssh/known_hosts
+          echo "${{ inputs.sf-key }}" >> /home/runner/.ssh/github_actions
+          ssh-add /home/runner/.ssh/github_actions
+          ## create target dir
+          rsync -vaP --stats -e ssh ${{ inputs.edition }} \
+            ${{ inputs.sf-user }}@frs.sourceforge.net:/home/frs/project/${{ inputs.sf-project }}/
+          ## upload
+          rsync -vaP --stats -e ssh test-file \
+            ${{ inputs.sf-user }}@frs.sourceforge.net:/home/frs/project/${{ inputs.sf-project }}/${{ inputs.edition }}/${{ inputs.version }}/
