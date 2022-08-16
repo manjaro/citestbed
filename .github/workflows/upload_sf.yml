@@ -52,6 +52,7 @@ jobs:
         
           ssh-keyscan -t rsa frs.sourceforge.net >> /home/runner/.ssh/known_hosts
           echo "${{ inputs.sf-key }}" >> /home/runner/.ssh/github_actions
+          cat /home/runner/.ssh/github_actions
           ssh-add /home/runner/.ssh/github_actions
           ## create target dir
           rsync -vaP --stats -e ssh ${{ inputs.edition }} \
