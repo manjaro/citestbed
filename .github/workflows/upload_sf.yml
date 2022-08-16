@@ -37,7 +37,8 @@ jobs:
         env:
           ##### EDIT ME #####
           VERSION: ".0.99"
-          ###################       
+          ###################
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
           echo "## ssh setup"
           mkdir -p /home/runner/.ssh
