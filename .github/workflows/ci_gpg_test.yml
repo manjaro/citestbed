@@ -51,8 +51,10 @@ jobs:
           echo "${{ secrets.CI_GPG_PASSPHRASE }}" > "$PASSPHRASE_FILE"
           
           echo "Secrets unpacked..."
-          paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
-          | $GPG --import &>/dev/null
+          #paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
+          #| $GPG --import &>/dev/null
+          cat <(echo -e "$SECRET_KEY_FILE) | gpg --batch --import &>/dev/null
+          cat <(echo -e "$PUBLIC_KEY_FILE) | gpg --batch --import &>/dev/null
           $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" file1
           ls -lasih
           
