@@ -45,7 +45,7 @@ jobs:
           echo "unpack public key"
           echo "${{ secrets.CI_PUB_KEY }}" | base64 --decode > "$PUBLIC_KEY_FILE"
           echo "unpack secret key"
-          echo "${{ secrets.CI_GPG_SECRET }}" | base64 --decode > "$SECRET_KEY_FILE"
+          echo "${{ secrets.CI_PRIV_KEY }}" | base64 --decode > "$SECRET_KEY_FILE"
           
           echo "passphrase"
           echo "${{ secrets.CI_GPG_PASSPHRASE }}" > "$PASSPHRASE_FILE"
