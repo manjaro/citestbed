@@ -33,7 +33,7 @@ jobs:
           echo "file2" > file2
           echo "file3" > file3
                  
-          sudo apt-get install paperkey gpg
+          sudo apt-get install gpg
           
           echo "setup values"
           GPG_HOMEDIR="$(mktemp -d -t gnupg.XXX)"
@@ -49,14 +49,11 @@ jobs:
           
           echo "passphrase"
           echo "${{ secrets.CI_GPG_PASSPHRASE }}" > "$PASSPHRASE_FILE"
-          
           echo "Secrets unpacked..."
-          paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
-          | $GPG --import &>/dev/null
-          #echo "Import Private Key"
-          #$GPG --import "$SECRET_KEY_FILE" &>/dev/null
-          #echo "Import Public Key"
-          #$GPG --import "$PUBLIC_KEY_FILE" &>/dev/null
+          echo "Import Private Key"
+          $GPG --import "$SECRET_KEY_FILE" &>/dev/null
+          echo "Import Public Key"
+          $GPG --import "$PUBLIC_KEY_FILE" &>/dev/null
           echo "Sign file1"
           $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" file1
           ls -lasih
