@@ -54,9 +54,9 @@ jobs:
           #paperkey --pubring "$PUBLIC_KEY_FILE" --secrets "$SECRET_KEY_FILE" \
           #| $GPG --import &>/dev/null
           echo "Import Private Key"
-          cat <(echo -e "$SECRET_KEY_FILE") | $GPG --batch --import &>/dev/null
+          $GPG --import "$SECRET_KEY_FILE" &>/dev/null
           echo "Import Public Key"
-          cat <(echo -e "$PUBLIC_KEY_FILE") | $GPG --batch --import &>/dev/null
+          $GPG --import "$PUBLIC_KEY_FILE" &>/dev/null
           echo "Sign file1"
           $GPG --pinentry-mode loopback --detach-sign --use-agent -u "${{ secrets.CI_GPG_KEY }}" --passphrase-file "$PASSPHRASE_FILE" file1
           ls -lasih
