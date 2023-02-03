@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [gnome]
+        EDITION: [gnome, xfce, kde]
         KERNEL: [linux61]
         BRANCH: [stable]
         SCOPE: [minimal,full]
@@ -25,7 +25,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "22.0.1"
+          version: "22.0.2"
           kernel: ${{ matrix.kernel }}
           code-name: "Sikaris"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
