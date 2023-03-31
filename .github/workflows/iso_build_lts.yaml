@@ -25,9 +25,10 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "22.0.5"
+          version: "22.1.0rc1"
           kernel: ${{ matrix.kernel }}
-          code-name: "Sikaris"
+          code-name: "Talos"
+          office-chooser: "true"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
           cdn77-host: ${{ secrets.CDN_HOST }}
