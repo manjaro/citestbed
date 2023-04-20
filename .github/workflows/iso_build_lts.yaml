@@ -25,7 +25,7 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "22.1.0rc1"
+          version: "22.1.0"
           kernel: ${{ matrix.kernel }}
           code-name: "Talos"
           office-chooser: "true"
@@ -34,9 +34,9 @@ jobs:
           cdn77-host: ${{ secrets.CDN_HOST }}
           cdn77-user: ${{ secrets.CDN_USER }}
           cdn77-pwd: ${{ secrets.CDN_PWD }}
-          #sf-project: manjarolinux
-          #sf-user: ${{ secrets.SF_USER_NAME }}
-          #sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
+          sf-project: manjarolinux
+          sf-user: ${{ secrets.SF_USER_NAME }}
+          sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
       - name: rollback cdn77 upload
         if: ${{ failure() || cancelled() }}
         run: |
