@@ -37,6 +37,7 @@ jobs:
           sf-project: manjarolinux
           sf-user: ${{ secrets.SF_USER_NAME }}
           sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
+          s3-cfg: ${{ secrets.S3_CFG }}
       - name: rollback cdn77 upload
         if: ${{ failure() || cancelled() }}
         run: |
