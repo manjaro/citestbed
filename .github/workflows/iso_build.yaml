@@ -10,10 +10,12 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        EDITION: [gnome, xfce, kde]
+        # EDITION: [gnome, xfce, kde]
+        EDITION: [xfce]
         KERNEL: [linux65]
         BRANCH: [stable]
-        SCOPE: [minimal,full]
+        # SCOPE: [minimal,full]
+        SCOPE: [minimal]
         ###################
     steps:
       - uses: styfle/cancel-workflow-action@0.10.1
