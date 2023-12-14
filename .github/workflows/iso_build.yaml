@@ -10,12 +10,10 @@ jobs:
     strategy:
       matrix:
         ##### EDIT ME #####
-        # EDITION: [gnome, xfce, kde]
-        EDITION: [xfce]
+        EDITION: [gnome, xfce, kde]
         KERNEL: [linux65]
         BRANCH: [stable]
-        # SCOPE: [minimal,full]
-        SCOPE: [minimal]
+        SCOPE: [minimal,full]
         ###################
     steps:
       - uses: styfle/cancel-workflow-action@0.10.1
@@ -27,24 +25,16 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "23.0.4.1"
+          version: "23.0.4"
           kernel: ${{ matrix.kernel }}
           code-name: "Uranos"
           office-chooser: "true"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
-          # cdn77-host: ${{ secrets.CDN_HOST }}
-          # cdn77-user: ${{ secrets.CDN_USER }}
-          # cdn77-pwd: ${{ secrets.CDN_PWD }}
-          # sf-project: manjarolinux
-          # sf-user: ${{ secrets.SF_USER_NAME }}
-          # sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
+          sf-project: manjarolinux
+          sf-user: ${{ secrets.SF_USER_NAME }}
+          sf-key: ${{ secrets.SF_PRIV_SSHKEY }}
           s3-cfg: ${{ secrets.S3_CFG }}
-      - name: rollback cdn77 upload
-        if: ${{ failure() || cancelled() }}
-        run: |
-          sshpass -p "${{ secrets.CDN_PWD }}" rsync --delete -vaP --stats \
-              -e ssh $(mktemp) ${{ secrets.CDN_USER }}@${{ secrets.CDN_HOST }}:/www/${{ env.edition }}/${{ env.version }}
       - name: rollback sourceforge upload
         if: ${{ failure() || cancelled() }}
         env:
