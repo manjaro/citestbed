@@ -42,3 +42,7 @@ jobs:
         run: |
           rsync --delete -vaP --stats \
               -e ssh $(mktemp) ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/${{ env.sf-project }}/${{ env.edition }}/${{ env.version }}
+      - name: rollback cdn77 upload
+        if: ${{ failure() || cancelled() }}
+        run: |
+          s3cmd rm -r -f s3://s3downloadseu/${{ env.edition }}/${{ env.version }}
