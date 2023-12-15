@@ -25,9 +25,9 @@ jobs:
           edition: ${{ matrix.edition }}
           branch: ${{ matrix.branch }}
           scope: ${{ matrix.scope }}
-          version: "23.0.4"
+          version: "23.1.0"
           kernel: ${{ matrix.kernel }}
-          code-name: "Uranos"
+          code-name: "Vulcan"
           office-chooser: "true"
           gpg-secret-key-base64: ${{ secrets.CI_PRIV_KEY }}
           gpg-passphrase: ${{ secrets.CI_GPG_PASSPHRASE }}
@@ -47,3 +47,7 @@ jobs:
         run: |
           rsync --delete -vaP --stats \
               -e ssh $(mktemp) ${{ secrets.SF_USER_NAME }}@frs.sourceforge.net:/home/frs/project/${{ env.sf-project }}/${{ env.edition }}/${{ env.version }}
+      - name: rollback cdn77 upload
+        if: ${{ failure() || cancelled() }}
+        run: |
+          s3cmd rm -r -f s3://s3downloadseu/${{ env.edition }}/${{ env.version }}
